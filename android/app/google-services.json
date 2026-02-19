@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "106461540603",
+    "project_id": "pathway-jobs",
+    "storage_bucket": "pathway-jobs.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106461540603:android:7579d3e015c8fd378e405e",
+        "android_client_info": {
+          "package_name": "com.example.pathway_jobs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxMFRPJO_njh7OVNGfI5aerGelzHpSaK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
