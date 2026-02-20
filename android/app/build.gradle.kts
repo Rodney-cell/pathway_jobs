@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.pathway_jobs"
-    compileSdk = 34 // Specify the SDK version you want to compile against (using your provided value)
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -22,27 +22,26 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.pathway_jobs" // This must match your configuration
-        minSdk = 21 // Minimum SDK version
-        targetSdk = 34 // Target SDK version
-        versionCode = 1 // Version code
-        versionName = "1.0" // Version name
+        applicationId = "com.example.pathway_jobs"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false // Disable minification for release
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-            // Add your specific signing config if necessary
-            signingConfig = signingConfigs.getByName("debug") // Change as needed
+            // 🔧 IMPORTANT FIX
+            isMinifyEnabled = false
+            isShrinkResources = false
+
+            // Safe default for CI builds
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
 
 // Flutter configuration
 flutter {
-    source = "../.." // Adjust if needed
+    source = "../.."
 }
