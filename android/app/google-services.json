@@ -12,7 +12,20 @@
           "package_name": "com.example.pathway_jobs"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "106461540603-923epi8l42v7ct1a67vngk2u2s380s25.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pathway_jobs",
+            "certificate_hash": "34f9aecc2734a217452a1a040cd76d365ca1eb08"
+          }
+        },
+        {
+          "client_id": "106461540603-8hj9ae8etqlqsubdlf97ahvbce99eek2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAxMFRPJO_njh7OVNGfI5aerGelzHpSaK4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "106461540603-8hj9ae8etqlqsubdlf97ahvbce99eek2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "106461540603-mnnounbdii0k8hb5oetqbmk49a63u4rd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.pathwayJobs"
+              }
+            }
+          ]
         }
       }
     }
