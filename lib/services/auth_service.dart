@@ -1,3 +1,4 @@
+import 'firestore_service.dart'; // Added import for FirestoreService
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -11,11 +12,20 @@ class AuthService {
     );
   }
 
+  // Updated register function
   Future<UserCredential> register(String email, String password) async {
-    return await _auth.createUserWithEmailAndPassword(
+    final result = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    final user = result.user;
+
+    if (user != null) {
+      await FirestoreService().createUserDocument(user); // Create Firestore record for new user
+    }
+
+    return result;
   }
 
   Future<UserCredential> signInWithGoogle() async {
