@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+// 👇 ADD THIS LINE
+import 'firestore_test.dart';
+
 import 'screens/auth/login_screen.dart';
-import 'screens/admin/approval_screen.dart'; // 👈 added
+import 'screens/admin/approval_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // 👇 ADD THIS LINE (Firestore test)
+  await FirestoreTest.addTestData();
+
   runApp(const PathwayJobsApp());
 }
 
@@ -25,7 +33,7 @@ class PathwayJobsApp extends StatelessWidget {
       // 👇 initial screen
       home: const LoginScreen(),
 
-      // 👇 added routes
+      // 👇 routes
       routes: {
         '/admin-approvals': (context) => const ApprovalScreen(),
       },

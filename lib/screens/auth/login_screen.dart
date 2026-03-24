@@ -50,19 +50,24 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // 🔥 UPDATED GOOGLE LOGIN (SAFE VERSION)
   Future<void> _googleLogin() async {
     try {
-      await _authService.signInWithGoogle();
+      final user = await _authService.signInWithGoogle();
 
-      final user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        if (!mounted) return;
-        await RoleRouter.routeUser(context, user.uid);
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Google sign-in cancelled")),
+        );
+        return;
       }
+
+      if (!mounted) return;
+
+      await RoleRouter.routeUser(context, user.uid);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(content: Text("Google login failed: $e")),
       );
     }
   }

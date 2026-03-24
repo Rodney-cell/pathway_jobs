@@ -1,10 +1,12 @@
-import 'firestore_service.dart'; // Added import for FirestoreService
+import 'firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  // 🔐 EMAIL LOGIN
   Future<UserCredential> login(String email, String password) async {
     return await _auth.signInWithEmailAndPassword(
       email: email,
@@ -12,7 +14,7 @@ class AuthService {
     );
   }
 
-  // Updated register function
+  // 🆕 REGISTER USER
   Future<UserCredential> register(String email, String password) async {
     final result = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -22,32 +24,56 @@ class AuthService {
     final user = result.user;
 
     if (user != null) {
-      await FirestoreService().createUserDocument(user); // Create Firestore record for new user
+      await FirestoreService().createUserDocument(user);
     }
 
     return result;
   }
 
-  Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser =
-        await GoogleSignIn().signIn();
+  // 🔵 GOOGLE SIGN-IN (SAFE VERSION)
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser =
+          await _googleSignIn.signIn();
 
-    if (googleUser == null) {
-      throw Exception("Google sign-in aborted");
+      if (googleUser == null) {
+        print("User cancelled login");
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      if (googleAuth.idToken == null) {
+        print("ERROR: ID Token is NULL");
+        return null;
+      }
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      final user = userCredential.user;
+
+      // 🔥 Create Firestore record if new user
+      if (user != null) {
+        await FirestoreService().createUserDocument(user);
+      }
+
+      return user;
+    } catch (e) {
+      print("Google Sign-In Error: $e");
+      return null;
     }
-
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    return await _auth.signInWithCredential(credential);
   }
 
+  // 🚪 LOGOUT
   Future<void> logout() async {
+    await _googleSignIn.signOut(); // Important
     await _auth.signOut();
   }
 }
