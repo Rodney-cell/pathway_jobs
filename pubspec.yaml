@@ -30,6 +30,7 @@ flutter:
 
   assets:
     - assets/icon/app_icon.png
+    - assets/google_logo.png
 
 flutter_launcher_icons:
   android: true

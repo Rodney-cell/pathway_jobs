@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // 🔥 UPDATED GOOGLE LOGIN (SAFE VERSION)
+  // 🔥 Google Login
   Future<void> _googleLogin() async {
     try {
       final user = await _authService.signInWithGoogle();
@@ -106,7 +106,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: Icon(Icons.email),
                 ),
               ),
+
               const SizedBox(height: 16),
+
               TextField(
                 controller: passwordController,
                 obscureText: _obscurePassword,
@@ -127,7 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 10),
+
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -135,7 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text("Forgot Password?"),
                 ),
               ),
+
               const SizedBox(height: 20),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -147,15 +153,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       : const Text('Login'),
                 ),
               ),
+
               const SizedBox(height: 12),
+
+              // 🔵 Google Button
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
+                  icon: Image.asset(
+                    'assets/google_logo.png',
+                    height: 24,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.login);
+                    },
+                  ),
+                  label: const Text("Sign in with Google"),
                   onPressed: _googleLogin,
-                  child: const Text("Sign in with Google"),
                 ),
               ),
+
               const SizedBox(height: 12),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

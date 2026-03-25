@@ -21,26 +21,40 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
       isLoading = true;
     });
 
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: phoneController.text.trim(),
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        await FirebaseAuth.instance.signInWithCredential(credential);
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message ?? "Verification failed")),
-        );
-      },
-      codeSent: (String verId, int? resendToken) {
-        verificationId = verId;
-        setState(() {
-          codeSent = true;
-        });
-      },
-      codeAutoRetrievalTimeout: (String verId) {
-        verificationId = verId;
-      },
-    );
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneController.text.trim(),
+
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+          if (!mounted) return;
+          Navigator.pop(context);
+        },
+
+        verificationFailed: (FirebaseAuthException e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.message ?? "Verification failed")),
+          );
+        },
+
+        codeSent: (String verId, int? resendToken) {
+          verificationId = verId;
+
+          setState(() {
+            codeSent = true;
+          });
+        },
+
+        codeAutoRetrievalTimeout: (String verId) {
+          verificationId = verId;
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Phone login failed: $e")),
+      );
+    }
 
     setState(() {
       isLoading = false;
@@ -48,16 +62,23 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
   }
 
   Future<void> signInWithOTP() async {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: otpController.text.trim(),
-    );
+    try {
+      PhoneAuthCredential credential =
+          PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: otpController.text.trim(),
+      );
 
-    await FirebaseAuth.instance.signInWithCredential(credential);
+      await FirebaseAuth.instance.signInWithCredential(credential);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    Navigator.pop(context);
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Invalid OTP")),
+      );
+    }
   }
 
   @override
@@ -71,26 +92,35 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
             if (!codeSent) ...[
               TextField(
                 controller: phoneController,
+                keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                   labelText: "Phone Number (+27...)",
                 ),
               ),
+
               const SizedBox(height: 20),
+
               ElevatedButton(
                 onPressed: isLoading ? null : verifyPhone,
                 child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
                     : const Text("Send OTP"),
               ),
             ],
+
             if (codeSent) ...[
               TextField(
                 controller: otpController,
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: "Enter OTP",
                 ),
               ),
+
               const SizedBox(height: 20),
+
               ElevatedButton(
                 onPressed: signInWithOTP,
                 child: const Text("Verify & Login"),
