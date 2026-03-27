@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../jobs/job_list_screen.dart';
-import '../employer/employer_profile.dart';
-import '../government/government_programs.dart';
-import '../profile/profile_screen.dart';
+// Added import for the employer dashboard
+import '../employer/employer_dashboard.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,64 +10,41 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pathway Jobs'),
+        title: const Text('Home'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
         children: [
-
+          // Example existing list tiles (replace or keep as needed)
           ListTile(
-            title: const Text("Find Jobs"),
+            title: const Text('Profile'),
+            trailing: const Icon(Icons.person),
+            onTap: () {
+              // Navigate to profile (example)
+            },
+          ),
+
+          // Added Employer Dashboard ListTile
+          ListTile(
+            title: const Text("Employer Dashboard"),
             trailing: const Icon(Icons.arrow_forward),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const JobListScreen(),
+                  builder: (_) => const EmployerDashboard(),
                 ),
               );
             },
           ),
 
+          // Other list tiles...
           ListTile(
-            title: const Text("Employers"),
-            trailing: const Icon(Icons.arrow_forward),
+            title: const Text('Settings'),
+            trailing: const Icon(Icons.settings),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const EmployerProfileScreen(),
-                ),
-              );
+              // Navigate to settings (example)
             },
           ),
-
-          ListTile(
-            title: const Text("Government Programs"),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const GovernmentProgramsScreen(),
-                ),
-              );
-            },
-          ),
-
-          ListTile(
-            title: const Text("My Profile"),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const ProfileScreen(),
-                ),
-              );
-            },
-          ),
-
         ],
       ),
     );
