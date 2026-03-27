@@ -24,10 +24,11 @@ class PathwayJobsApp extends StatelessWidget {
       title: 'Pathway Jobs',
       debugShowCheckedModeBanner: false,
 
-      home: const ApprovalScreen(),
+      home: const LoginScreen(),
 
       routes: {
         '/admin-approvals': (context) => const ApprovalScreen(),
+        '/login': (context) => const LoginScreen(),
       },
     );
   }

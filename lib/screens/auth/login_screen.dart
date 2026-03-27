@@ -20,6 +20,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
+  // ✅ TEMPORARY LOGIN BYPASS
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/admin-approvals');
+      }
+    });
+  }
+
   Future<void> _login() async {
     setState(() {
       _isLoading = true;

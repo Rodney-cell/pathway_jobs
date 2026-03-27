@@ -1,6 +1,7 @@
-import 'firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'firestore_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -8,26 +9,34 @@ class AuthService {
 
   // 🔐 EMAIL LOGIN
   Future<UserCredential> login(String email, String password) async {
-    return await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      return await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      throw Exception("Login failed: ${e.toString()}");
+    }
   }
 
   // 🆕 REGISTER USER
   Future<UserCredential> register(String email, String password) async {
-    final result = await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      final result = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    final user = result.user;
+      final user = result.user;
 
-    if (user != null) {
-      await FirestoreService().createUserDocument(user);
+      if (user != null) {
+        await FirestoreService().createUserDocument(user);
+      }
+
+      return result;
+    } catch (e) {
+      throw Exception("Registration failed: ${e.toString()}");
     }
-
-    return result;
   }
 
   // 🔵 GOOGLE SIGN-IN (SAFE VERSION)
@@ -73,7 +82,16 @@ class AuthService {
 
   // 🚪 LOGOUT
   Future<void> logout() async {
-    await _googleSignIn.signOut(); // Important
-    await _auth.signOut();
+    try {
+      await _googleSignIn.signOut();
+      await _auth.signOut();
+    } catch (e) {
+      print("Logout error: $e");
+    }
+  }
+
+  // 👤 GET CURRENT USER
+  User? getCurrentUser() {
+    return _auth.currentUser;
   }
 }
