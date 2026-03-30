@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../services/auth_service.dart';
 import '../../services/role_router.dart';
+import '../home/home_screen.dart';
 import 'phone_login_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,18 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  // ✅ TEMPORARY LOGIN BYPASS
-  @override
-  void initState() {
-    super.initState();
-
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/admin-approvals');
-      }
-    });
-  }
-
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
@@ -47,6 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (user != null) {
         if (!mounted) return;
+
+        // Route based on role
         await RoleRouter.routeUser(context, user.uid);
       }
     } catch (e) {
@@ -62,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // 🔥 Google Login
+  // Google Login
   Future<void> _googleLogin() async {
     try {
       final user = await _authService.signInWithGoogle();
@@ -168,17 +159,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 12),
 
-              // 🔵 Google Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  icon: Image.asset(
-                    'assets/google_logo.png',
-                    height: 24,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.login);
-                    },
-                  ),
+                  icon: const Icon(Icons.login),
                   label: const Text("Sign in with Google"),
                   onPressed: _googleLogin,
                 ),

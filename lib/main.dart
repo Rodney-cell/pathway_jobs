@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 
 import 'screens/auth/login_screen.dart';
 import 'screens/admin/approval_screen.dart';
+import 'screens/home/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,8 +28,9 @@ class PathwayJobsApp extends StatelessWidget {
       home: const LoginScreen(),
 
       routes: {
-        '/admin-approvals': (context) => const ApprovalScreen(),
         '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/admin-approvals': (context) => const ApprovalScreen(),
       },
     );
   }
