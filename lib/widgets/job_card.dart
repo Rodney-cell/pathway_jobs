@@ -3,30 +3,25 @@ import '../models/job_post.dart';
 
 class JobCard extends StatelessWidget {
   final JobPost job;
-  final VoidCallback? onTap;
+  final VoidCallback? onApply;
 
   const JobCard({
     super.key,
     required this.job,
-    this.onTap,
+    this.onApply,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.all(8),
       child: ListTile(
         title: Text(job.title),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(job.company),
-            Text(job.location),
-            Text(job.salary),
-          ],
+        subtitle: Text("${job.company} • ${job.location}"),
+        trailing: ElevatedButton(
+          onPressed: onApply,
+          child: const Text("Apply"),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios),
-        onTap: onTap,
       ),
     );
   }

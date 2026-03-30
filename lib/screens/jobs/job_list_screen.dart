@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../widgets/job_card.dart';
 import '../../services/job_service.dart';
 import '../../models/job_post.dart';
+import '../../services/application_service.dart';
+import '../../models/job_application.dart';
 
-// Added import for the job post screen
 import 'job_post_screen.dart';
 
 class JobListScreen extends StatefulWidget {
@@ -15,6 +18,8 @@ class JobListScreen extends StatefulWidget {
 
 class _JobListScreenState extends State<JobListScreen> {
   final JobService _jobService = JobService();
+  final ApplicationService _applicationService = ApplicationService();
+
   List<JobPost> jobs = [];
 
   @override
@@ -41,11 +46,30 @@ class _JobListScreenState extends State<JobListScreen> {
         itemBuilder: (context, index) {
           return JobCard(
             job: jobs[index],
+
+            // Apply Button Logic
+            onApply: () async {
+              final user = FirebaseAuth.instance.currentUser;
+
+              final application = JobApplication(
+                id: '',
+                jobId: jobs[index].id,
+                userId: user!.uid,
+                status: "pending",
+              );
+
+              await _applicationService.apply(application);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Application Sent"),
+                ),
+              );
+            },
           );
         },
       ),
 
-      // Added FloatingActionButton to navigate to JobPostScreen
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(

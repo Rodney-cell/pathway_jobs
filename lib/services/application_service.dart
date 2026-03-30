@@ -6,10 +6,12 @@ class ApplicationService {
 
   // Apply for job
   Future<void> apply(JobApplication application) async {
-    await _firestore
-        .collection('applications')
-        .doc(application.id)
-        .set(application.toMap());
+    final doc = _firestore.collection('applications').doc();
+
+    await doc.set({
+      ...application.toMap(),
+      'id': doc.id,
+    });
   }
 
   // Get user applications
@@ -19,7 +21,23 @@ class ApplicationService {
         .where('userId', isEqualTo: userId)
         .snapshots()
         .map((snapshot) => snapshot.docs
-            .map((doc) => JobApplication.fromMap(doc.data()))
+            .map((doc) => JobApplication.fromMap(
+                  doc.data(),
+                  doc.id,
+                ))
+            .toList());
+  }
+
+  // Get all applications (Employer dashboard)
+  Stream<List<JobApplication>> getAllApplications() {
+    return _firestore
+        .collection('applications')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => JobApplication.fromMap(
+                  doc.data(),
+                  doc.id,
+                ))
             .toList());
   }
 

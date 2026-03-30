@@ -1,7 +1,16 @@
+import 'package:flutter/material.dart';
+
 class NotificationService {
 
-  void showNotification(String title, String message) {
-    print("Notification: $title - $message");
-  }
+  static void show(
+      BuildContext context,
+      String message) {
 
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
 }
