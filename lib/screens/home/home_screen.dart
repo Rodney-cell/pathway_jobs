@@ -11,6 +11,14 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.login),
+            onPressed: () {
+              Navigator.pushNamed(context, '/login');
+            },
+          ),
+        ],
       ),
       body: ListView(
         children: [

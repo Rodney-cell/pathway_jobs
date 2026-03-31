@@ -51,10 +51,16 @@ class _JobListScreenState extends State<JobListScreen> {
             onApply: () async {
               final user = FirebaseAuth.instance.currentUser;
 
+              // If not logged in → go to login
+              if (user == null) {
+                Navigator.pushNamed(context, '/login');
+                return;
+              }
+
               final application = JobApplication(
                 id: '',
                 jobId: jobs[index].id,
-                userId: user!.uid,
+                userId: user.uid,
                 status: "pending",
               );
 
