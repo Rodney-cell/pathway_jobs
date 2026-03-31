@@ -8,11 +8,9 @@ import 'screens/home/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(const PathwayJobsApp());
 }
 
@@ -25,7 +23,8 @@ class PathwayJobsApp extends StatelessWidget {
       title: 'Pathway Jobs',
       debugShowCheckedModeBanner: false,
 
-      home: const LoginScreen(),
+      // Start at Home Screen instead of Login
+      home: const HomeScreen(),
 
       routes: {
         '/login': (context) => const LoginScreen(),
