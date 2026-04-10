@@ -19,19 +19,14 @@ class AuthService {
   }
 
   // 🆕 REGISTER USER
-  Future<void> register(String email, String password) async {
-    try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email, 
-        password: password,
-      );
-      if (result.user != null) {
-        // Initialize default user data
-        await saveUserRole(result.user!.uid, 'jobseeker', 'active');
-      }
-    } on FirebaseAuthException catch (e) {
-      throw e.message ?? "Registration failed.";
-    }
+  Future<UserCredential> register(
+    String email,
+    String password,
+  ) async {
+    return await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 
   // 🔵 GOOGLE SIGN-IN
@@ -40,19 +35,22 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
-      
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
       // Create document only if it's a new user
       if (userCredential.additionalUserInfo?.isNewUser ?? false) {
         await saveUserRole(userCredential.user!.uid, 'jobseeker', 'active');
       }
-      
+
       return userCredential.user;
     } catch (e) {
       print("Google Sign-In Error: $e");

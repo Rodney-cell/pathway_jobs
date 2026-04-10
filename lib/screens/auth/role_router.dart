@@ -5,9 +5,8 @@ import '../dashboard/admin_dashboard.dart';
 import '../dashboard/jobseeker_dashboard.dart';
 import '../dashboard/employer_dashboard.dart';
 import '../dashboard/government_dashboard.dart';
-import '../auth/login_screen.dart';
-// 1. Added Import
-import 'rejected_screen.dart'; 
+import '../auth/login_screen.dart'; // 1. Added Import
+import 'rejected_screen.dart';
 
 class RoleRouter extends StatelessWidget {
   const RoleRouter({super.key});
@@ -49,7 +48,7 @@ class RoleRouter extends StatelessWidget {
             var userData = userSnapshot.data!.data() as Map<String, dynamic>;
             String role = userData['role'] ?? 'jobseeker';
             // Default to pending if no status set to be safe
-            String status = userData['status'] ?? 'pending'; 
+            String status = userData['status'] ?? 'pending';
 
             // Admin
             if (role == 'admin') {
@@ -68,12 +67,10 @@ class RoleRouter extends StatelessWidget {
                   ),
                 );
               }
-              
               // 2. Added Rejected Logic
               if (status == 'rejected') {
                 return const RejectedScreen();
               }
-              
               // Only authorized users reach this
               return const GovernmentDashboard();
             }
@@ -84,7 +81,7 @@ class RoleRouter extends StatelessWidget {
             }
 
             // Jobseeker
-            return const JobseekerDashboard();
+            return JobseekerDashboard(); // <-- Updated here
           },
         );
       },

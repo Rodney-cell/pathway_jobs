@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/admin_service.dart';
 // Note: Ensure UserApprovalCard accepts onApprove and onReject callbacks
-import '../../widgets/user_approval_card.dart'; 
+import '../../widgets/user_approval_card.dart';
 
 class ApprovalScreen extends StatelessWidget {
   const ApprovalScreen({super.key});
@@ -48,22 +48,22 @@ class ApprovalScreen extends StatelessWidget {
             );
           }
 
+          // --- UPDATED LISTVIEW ---
           return ListView(
-            children: snapshot.data!.docs.map((doc) {
+            children: snapshot.data!.docs.map<Widget>((doc) {
               final data = doc.data() as Map<String, dynamic>;
               final String userId = doc.id;
-
+              
               return UserApprovalCard(
                 userId: userId,
                 email: data['email'] ?? 'No email',
                 department: data['department'] ?? 'Unknown',
-                // --- INTEGRATION POINT ---
                 onApprove: () => _updateUserStatus(context, userId, 'approved'),
                 onReject: () => _updateUserStatus(context, userId, 'rejected'),
-                // -------------------------
               );
             }).toList(),
           );
+          // ------------------------
         },
       ),
     );
