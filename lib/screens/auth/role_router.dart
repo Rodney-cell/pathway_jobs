@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../dashboard/admin_dashboard.dart';
 import '../dashboard/jobseeker_dashboard.dart';
 import '../dashboard/employer_dashboard.dart';
 import '../dashboard/government_dashboard.dart';
-import '../auth/login_screen.dart'; // 1. Added Import
+
+import '../auth/login_screen.dart';
 import 'rejected_screen.dart';
 
 class RoleRouter extends StatelessWidget {
@@ -16,6 +18,7 @@ class RoleRouter extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
+
         // Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -37,7 +40,9 @@ class RoleRouter extends StatelessWidget {
               .doc(snapshot.data!.uid)
               .get(),
           builder: (context, userSnapshot) {
-            if (!userSnapshot.hasData) {
+
+            // Loading user data
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(
                   child: CircularProgressIndicator(),
@@ -45,9 +50,15 @@ class RoleRouter extends StatelessWidget {
               );
             }
 
-            var userData = userSnapshot.data!.data() as Map<String, dynamic>;
+            // If no user data
+            if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+              return const LoginScreen();
+            }
+
+            var userData =
+                userSnapshot.data!.data() as Map<String, dynamic>;
+
             String role = userData['role'] ?? 'jobseeker';
-            // Default to pending if no status set to be safe
             String status = userData['status'] ?? 'pending';
 
             // Admin
@@ -55,7 +66,7 @@ class RoleRouter extends StatelessWidget {
               return const AdminDashboard();
             }
 
-            // Government (Professionalized Approval Flow)
+            // Government
             if (role == 'government') {
               if (status == 'pending') {
                 return const Scaffold(
@@ -67,11 +78,11 @@ class RoleRouter extends StatelessWidget {
                   ),
                 );
               }
-              // 2. Added Rejected Logic
+
               if (status == 'rejected') {
                 return const RejectedScreen();
               }
-              // Only authorized users reach this
+
               return const GovernmentDashboard();
             }
 
@@ -80,8 +91,8 @@ class RoleRouter extends StatelessWidget {
               return const EmployerDashboard();
             }
 
-            // Jobseeker
-            return JobseekerDashboard(); // <-- Updated here
+            // Jobseeker (default)
+            return const JobseekerDashboard();
           },
         );
       },
