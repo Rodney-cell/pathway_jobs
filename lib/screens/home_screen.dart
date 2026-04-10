@@ -1,87 +1,86 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../services/auth_service.dart';
+
+// Dashboards
+import '../jobseeker/jobseeker_dashboard.dart';
+import '../dashboard/employer_dashboard.dart';
+import '../government/government_dashboard.dart';
+import '../admin/admin_dashboard.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pathway Jobs'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+    final user = FirebaseAuth.instance.currentUser;
 
-            Text(
-              "From Application to Employment.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-
-            SizedBox(height: 40),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/register');
-              },
-              child: Text("Register"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-
-            SizedBox(height: 15),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/jobs');
-              },
-              child: Text("Find Jobs"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-
-            SizedBox(height: 15),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/cv_builder');
-              },
-              child: Text("Build CV"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-
-            SizedBox(height: 15),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/premium');
-              },
-              child: Text("Premium"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-
-            SizedBox(height: 40),
-
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/admin');
-              },
-              child: Text("Admin Login"),
-            ),
-          ],
+    if (user == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text("User not logged in"),
         ),
-      ),
+      );
+    }
+
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: AuthService().getUserProfile(user.uid),
+      builder: (context, snapshot) {
+
+        // Loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Error
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const Scaffold(
+            body: Center(
+              child: Text("Error loading profile"),
+            ),
+          );
+        }
+
+        final data = snapshot.data!;
+        final role = data['role'];
+        final status = data['status'];
+
+        // 🚨 Pending approval
+        if (status == "pending") {
+          return const Scaffold(
+            body: Center(
+              child: Text(
+                "Your account is pending approval.\nPlease wait for admin approval.",
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
+        // Role Routing
+        switch (role) {
+
+          case "jobseeker":
+            return const JobSeekerDashboard();
+
+          case "employer":
+            return const EmployerDashboard();
+
+          case "government":
+            return const GovernmentDashboard();
+
+          case "admin":
+            return const AdminDashboard();
+
+          default:
+            return const JobSeekerDashboard();
+        }
+      },
     );
   }
 }

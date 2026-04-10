@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../services/auth_service.dart';
-import '../../services/role_router.dart';
 import '../home/home_screen.dart';
 import 'phone_login_screen.dart';
+
+// ✅ Added import
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
+  // 🔐 EMAIL LOGIN
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
@@ -32,14 +35,14 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordController.text.trim(),
       );
 
-      final user = FirebaseAuth.instance.currentUser;
+      if (!mounted) return;
 
-      if (user != null) {
-        if (!mounted) return;
-
-        // Route based on role
-        await RoleRouter.routeUser(context, user.uid);
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
@@ -53,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Google Login
+  // 🔵 GOOGLE LOGIN
   Future<void> _googleLogin() async {
     try {
       final user = await _authService.signInWithGoogle();
@@ -67,7 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      await RoleRouter.routeUser(context, user.uid);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Google login failed: $e")),
@@ -75,6 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // 🔑 RESET PASSWORD
   Future<void> _resetPassword() async {
     if (emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -101,6 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -177,14 +187,35 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            const PhoneLoginScreen(),
+                        builder: (context) => const PhoneLoginScreen(),
                       ),
                     );
                   },
                   child: const Text("Login with Phone"),
                 ),
               ),
+
+              // ✅ Added below "Login with Phone"
+              const SizedBox(height: 20),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Create Account"),
+                  ),
+                ],
+              ),
+
             ],
           ),
         ),

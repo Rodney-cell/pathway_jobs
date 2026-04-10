@@ -1,97 +1,79 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import 'firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // 🔐 EMAIL LOGIN
-  Future<UserCredential> login(String email, String password) async {
+  // 📡 AUTH STATE STREAM - Listens for login/logout automatically
+  Stream<User?> get userStream => _auth.authStateChanges();
+
+  // 🔐 EMAIL LOGIN with specific error handling
+  Future<void> login(String email, String password) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } catch (e) {
-      throw Exception("Login failed: ${e.toString()}");
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      throw e.message ?? "An unknown login error occurred.";
     }
   }
 
   // 🆕 REGISTER USER
-  Future<UserCredential> register(String email, String password) async {
+  Future<void> register(String email, String password) async {
     try {
-      final result = await _auth.createUserWithEmailAndPassword(
-        email: email,
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+        email: email, 
         password: password,
       );
-
-      final user = result.user;
-
-      if (user != null) {
-        await FirestoreService().createUserDocument(user);
+      if (result.user != null) {
+        // Initialize default user data
+        await saveUserRole(result.user!.uid, 'jobseeker', 'active');
       }
-
-      return result;
-    } catch (e) {
-      throw Exception("Registration failed: ${e.toString()}");
+    } on FirebaseAuthException catch (e) {
+      throw e.message ?? "Registration failed.";
     }
   }
 
-  // 🔵 GOOGLE SIGN-IN (SAFE VERSION)
+  // 🔵 GOOGLE SIGN-IN
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser =
-          await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
 
-      if (googleUser == null) {
-        print("User cancelled login");
-        return null;
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      if (googleAuth.idToken == null) {
-        print("ERROR: ID Token is NULL");
-        return null;
-      }
-
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      final user = userCredential.user;
-
-      // 🔥 Create Firestore record if new user
-      if (user != null) {
-        await FirestoreService().createUserDocument(user);
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      
+      // Create document only if it's a new user
+      if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+        await saveUserRole(userCredential.user!.uid, 'jobseeker', 'active');
       }
-
-      return user;
+      
+      return userCredential.user;
     } catch (e) {
       print("Google Sign-In Error: $e");
       return null;
     }
   }
 
-  // 🚪 LOGOUT
-  Future<void> logout() async {
-    try {
-      await _googleSignIn.signOut();
-      await _auth.signOut();
-    } catch (e) {
-      print("Logout error: $e");
-    }
+  // 🔥 SAVE USER ROLE
+  Future<void> saveUserRole(String uid, String role, String status) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'role': role,
+      'status': status,
+      'createdAt': FieldValue.serverTimestamp(), // Better than Timestamp.now()
+    }, SetOptions(merge: true));
   }
 
-  // 👤 GET CURRENT USER
-  User? getCurrentUser() {
-    return _auth.currentUser;
+  // 🚪 LOGOUT
+  Future<void> logout() async {
+    await Future.wait([
+      _googleSignIn.signOut(),
+      _auth.signOut(),
+    ]);
   }
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class EmployerDashboard extends StatelessWidget {
-  const EmployerDashboard({super.key});
+class AdminDashboard extends StatelessWidget {
+  const AdminDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Employer Dashboard'),
+        title: const Text('Admin Dashboard'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -19,8 +19,8 @@ class EmployerDashboard extends StatelessWidget {
 
             _buildCard(
               context,
-              "Post Job",
-              Icons.post_add,
+              "Manage Users",
+              Icons.people,
               () {},
             ),
 
@@ -40,13 +40,6 @@ class EmployerDashboard extends StatelessWidget {
 
             _buildCard(
               context,
-              "Company Profile",
-              Icons.business,
-              () {},
-            ),
-
-            _buildCard(
-              context,
               "Reports",
               Icons.bar_chart,
               () {},
@@ -54,8 +47,15 @@ class EmployerDashboard extends StatelessWidget {
 
             _buildCard(
               context,
-              "Settings",
+              "System Settings",
               Icons.settings,
+              () {},
+            ),
+
+            _buildCard(
+              context,
+              "Admin Profile",
+              Icons.admin_panel_settings,
               () {},
             ),
 

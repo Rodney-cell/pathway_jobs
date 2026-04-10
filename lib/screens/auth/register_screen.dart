@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../services/auth_service.dart';
 import '../../utils/constants.dart';
 
@@ -12,26 +14,62 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
   final AuthService _authService = AuthService();
 
   String selectedRole = ROLE_JOBSEEKER;
 
+  bool _isLoading = false;
+
   Future<void> _register() async {
-    try {
-      await _authService.register(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-        role: selectedRole,
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
       );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await _authService.register(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+
+      final user = result.user;
+
+      if (user != null) {
+        String status = "approved";
+
+        // Government needs approval
+        if (selectedRole == ROLE_GOVERNMENT) {
+          status = "pending";
+        }
+
+        // Employer needs approval
+        if (selectedRole == ROLE_EMPLOYER) {
+          status = "pending";
+        }
+
+        await _authService.saveUserRole(
+          user.uid,
+          selectedRole,
+          status,
+        );
+      }
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            selectedRole == ROLE_GOVERNMENT
+            selectedRole == ROLE_GOVERNMENT || selectedRole == ROLE_EMPLOYER
                 ? 'Registration submitted. Await approval.'
-                : 'Registration successful. Please log in.',
+                : 'Registration successful.',
           ),
         ),
       );
@@ -42,27 +80,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SnackBar(content: Text(e.toString())),
       );
     }
-  }
 
-  Future<void> _login() async {
-    // Assume you already have user.uid from the authentication process
-    final user = // your logic to get the user;
-
-    final profile = await _authService.getUserProfile(user.uid);
-
-    if (profile == null) return;
-
-    final role = profile['role'];
-    final status = profile['status'];
-
-    if (status != 'active') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account pending approval')),
-      );
-      return;
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    // Add any further logic for successful login here
   }
 
   @override
@@ -71,45 +94,81 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(title: const Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-            ),
-            const SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: selectedRole,
-              items: const [
-                DropdownMenuItem(
-                  value: ROLE_JOBSEEKER,
-                  child: Text('Jobseeker'),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: "Email",
+                  prefixIcon: Icon(Icons.email),
                 ),
-                DropdownMenuItem(
-                  value: ROLE_EMPLOYER,
-                  child: Text('Employer'),
+              ),
+
+              const SizedBox(height: 16),
+
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: "Password",
+                  prefixIcon: Icon(Icons.lock),
                 ),
-                DropdownMenuItem(
-                  value: ROLE_GOVERNMENT,
-                  child: Text('Government'),
+              ),
+
+              const SizedBox(height: 16),
+
+              TextField(
+                controller: confirmPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: "Confirm Password",
+                  prefixIcon: Icon(Icons.lock),
                 ),
-              ],
-              onChanged: (value) {
-                setState(() => selectedRole = value!);
-              },
-              decoration: const InputDecoration(labelText: 'Select Role'),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _register,
-              child: const Text('Register'),
-            ),
-          ],
+              ),
+
+              const SizedBox(height: 20),
+
+              DropdownButtonFormField<String>(
+                value: selectedRole,
+                items: const [
+                  DropdownMenuItem(
+                    value: ROLE_JOBSEEKER,
+                    child: Text('Jobseeker'),
+                  ),
+                  DropdownMenuItem(
+                    value: ROLE_EMPLOYER,
+                    child: Text('Employer'),
+                  ),
+                  DropdownMenuItem(
+                    value: ROLE_GOVERNMENT,
+                    child: Text('Government'),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() => selectedRole = value!);
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Select Role',
+                  prefixIcon: Icon(Icons.person),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _register,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text('Register'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

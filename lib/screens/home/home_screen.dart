@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../jobseeker/profile_screen.dart';
 
 // Added import for the employer dashboard
-import '../employer/employer_dashboard.dart';
+import '../dashboard/employer_dashboard.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,16 +23,22 @@ class HomeScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          // Example existing list tiles (replace or keep as needed)
+
+          // Profile
           ListTile(
             title: const Text('Profile'),
             trailing: const Icon(Icons.person),
             onTap: () {
-              // Navigate to profile (example)
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProfileScreen(),
+                ),
+              );
             },
           ),
 
-          // Added Employer Dashboard ListTile
+          // Employer Dashboard
           ListTile(
             title: const Text("Employer Dashboard"),
             trailing: const Icon(Icons.arrow_forward),
@@ -45,12 +52,12 @@ class HomeScreen extends StatelessWidget {
             },
           ),
 
-          // Other list tiles...
+          // Settings
           ListTile(
             title: const Text('Settings'),
             trailing: const Icon(Icons.settings),
             onTap: () {
-              // Navigate to settings (example)
+              
             },
           ),
         ],

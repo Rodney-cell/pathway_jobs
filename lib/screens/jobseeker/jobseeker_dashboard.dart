@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class EmployerDashboard extends StatelessWidget {
-  const EmployerDashboard({super.key});
+class JobSeekerDashboard extends StatelessWidget {
+  const JobSeekerDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Employer Dashboard'),
+        title: const Text('Job Seeker Dashboard'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -19,46 +19,37 @@ class EmployerDashboard extends StatelessWidget {
 
             _buildCard(
               context,
-              "Post Job",
-              Icons.post_add,
-              () {},
+              "Find Jobs",
+              Icons.search,
+              () {
+                Navigator.pushNamed(context, '/jobList');
+              },
             ),
 
             _buildCard(
               context,
-              "Manage Jobs",
+              "My Applications",
               Icons.work,
+              () {
+                Navigator.pushNamed(context, '/applications');
+              },
+            ),
+
+            _buildCard(
+              context,
+              "Saved Jobs",
+              Icons.bookmark,
               () {},
             ),
 
             _buildCard(
               context,
-              "Applications",
-              Icons.assignment,
-              () {},
+              "Profile",
+              Icons.person,
+              () {
+                Navigator.pushNamed(context, '/profile');
+              },
             ),
-
-            _buildCard(
-              context,
-              "Company Profile",
-              Icons.business,
-              () {},
-            ),
-
-            _buildCard(
-              context,
-              "Reports",
-              Icons.bar_chart,
-              () {},
-            ),
-
-            _buildCard(
-              context,
-              "Settings",
-              Icons.settings,
-              () {},
-            ),
-
           ],
         ),
       ),
@@ -66,11 +57,11 @@ class EmployerDashboard extends StatelessWidget {
   }
 
   Widget _buildCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
+      BuildContext context,
+      String title,
+      IconData icon,
+      VoidCallback onTap,
+      ) {
     return Card(
       elevation: 4,
       child: InkWell(

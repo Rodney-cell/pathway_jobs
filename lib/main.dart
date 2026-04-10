@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
 import 'screens/auth/login_screen.dart';
 import 'screens/admin/approval_screen.dart';
 import 'screens/home/home_screen.dart';
+import 'screens/auth/role_router.dart'; // Fixed path
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,10 +22,7 @@ class PathwayJobsApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pathway Jobs',
       debugShowCheckedModeBanner: false,
-
-      // Start at Home Screen instead of Login
-      home: const HomeScreen(),
-
+      home: const RoleRouter(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
