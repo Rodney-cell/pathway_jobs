@@ -5,8 +5,8 @@ class GovernmentDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      body: const Center(
         child: Text(
           'Government Dashboard',
           style: TextStyle(fontSize: 22),

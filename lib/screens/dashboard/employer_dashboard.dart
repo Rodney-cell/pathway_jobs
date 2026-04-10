@@ -17,47 +17,12 @@ class EmployerDashboard extends StatelessWidget {
           mainAxisSpacing: 12,
           children: [
 
-            _buildCard(
-              context,
-              "Post Job",
-              Icons.post_add,
-              () {},
-            ),
-
-            _buildCard(
-              context,
-              "Manage Jobs",
-              Icons.work,
-              () {},
-            ),
-
-            _buildCard(
-              context,
-              "Applications",
-              Icons.assignment,
-              () {},
-            ),
-
-            _buildCard(
-              context,
-              "Company Profile",
-              Icons.business,
-              () {},
-            ),
-
-            _buildCard(
-              context,
-              "Reports",
-              Icons.bar_chart,
-              () {},
-            ),
-
-            _buildCard(
-              context,
-              "Settings",
-              Icons.settings,
-              () {},
-            ),
+            _buildCard(context, "Post Job", Icons.post_add, () {}),
+            _buildCard(context, "Manage Jobs", Icons.work, () {}),
+            _buildCard(context, "Applications", Icons.assignment, () {}),
+            _buildCard(context, "Company Profile", Icons.business, () {}),
+            _buildCard(context, "Reports", Icons.bar_chart, () {}),
+            _buildCard(context, "Settings", Icons.settings, () {}),
 
           ],
         ),
@@ -80,10 +45,7 @@ class EmployerDashboard extends StatelessWidget {
           children: [
             Icon(icon, size: 40),
             const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text(title),
           ],
         ),
       ),

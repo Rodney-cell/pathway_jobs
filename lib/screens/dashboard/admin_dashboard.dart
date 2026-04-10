@@ -5,8 +5,8 @@ class AdminDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      body: const Center(
         child: Text(
           'Admin Dashboard',
           style: TextStyle(fontSize: 22),
