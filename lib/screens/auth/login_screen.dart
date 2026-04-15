@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'dart:io';
 import '../../services/auth_service.dart';
 import '../home/home_screen.dart';
 import 'phone_login_screen.dart';
-
-// ✅ Added import
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final AuthService _authService = AuthService();
-
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -28,15 +25,12 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
-
     try {
       await _authService.login(
         emailController.text.trim(),
         passwordController.text.trim(),
       );
-
       if (!mounted) return;
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -48,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text(e.toString())),
       );
     }
-
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -58,6 +51,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // 🔵 GOOGLE LOGIN
   Future<void> _googleLogin() async {
+    // Extra safety check in case the method is called manually
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Google Sign-In not supported on this platform"),
+        ),
+      );
+      return;
+    }
+
     try {
       final user = await _authService.signInWithGoogle();
 
@@ -91,11 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
-
     await FirebaseAuth.instance.sendPasswordResetEmail(
       email: emailController.text.trim(),
     );
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Password reset email sent")),
     );
@@ -110,7 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -119,9 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: Icon(Icons.email),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               TextField(
                 controller: passwordController,
                 obscureText: _obscurePassword,
@@ -130,9 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
                     ),
                     onPressed: () {
                       setState(() {
@@ -142,9 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
-
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -152,9 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text("Forgot Password?"),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -166,20 +158,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       : const Text('Login'),
                 ),
               ),
-
               const SizedBox(height: 12),
-
+              // 🔵 GOOGLE SIGN-IN BUTTON (Auto-disabled on non-mobile)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.login),
                   label: const Text("Sign in with Google"),
-                  onPressed: _googleLogin,
+                  onPressed: (Platform.isAndroid || Platform.isIOS)
+                      ? _googleLogin
+                      : null,
                 ),
               ),
-
               const SizedBox(height: 12),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -194,10 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text("Login with Phone"),
                 ),
               ),
-
-              // ✅ Added below "Login with Phone"
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -215,7 +203,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-
             ],
           ),
         ),

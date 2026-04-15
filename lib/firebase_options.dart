@@ -67,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '106461540603',
     projectId: 'pathway-jobs',
     authDomain: 'pathway-jobs.firebaseapp.com',
+    databaseURL: 'https://pathway-jobs-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'pathway-jobs.firebasestorage.app',
   );
 
@@ -75,6 +76,7 @@ class DefaultFirebaseOptions {
     appId: '1:106461540603:android:7579d3e015c8fd378e405e',
     messagingSenderId: '106461540603',
     projectId: 'pathway-jobs',
+    databaseURL: 'https://pathway-jobs-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'pathway-jobs.firebasestorage.app',
   );
 

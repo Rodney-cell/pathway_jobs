@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "106461540603",
+    "firebase_url": "https://pathway-jobs-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "pathway-jobs",
     "storage_bucket": "pathway-jobs.firebasestorage.app"
   },
