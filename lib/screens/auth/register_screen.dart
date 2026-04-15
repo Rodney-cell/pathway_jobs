@@ -15,14 +15,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final AuthService _authService = AuthService();
-
   String selectedRole = ROLE_JOBSEEKER;
   bool _isLoading = false;
+  
   // 👁️ Password visibility
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  // 2. DISPOSE CONTROLLERS (Prevents Memory Leaks)
+  // 2. Dispose Controllers (Prevents memory leaks)
   @override
   void dispose() {
     emailController.dispose();
@@ -41,21 +41,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       _isLoading = true;
     });
-
     try {
       final result = await _authService.register(
         emailController.text.trim(),
         passwordController.text.trim(),
       );
-
       final user = result.user;
       if (user != null) {
-        String status = "approved"; // Government needs approval
-        if (selectedRole == ROLE_GOVERNMENT) {
-          status = "pending";
-        }
-        // Employer needs approval
-        if (selectedRole == ROLE_EMPLOYER) {
+        String status = "approved";
+        if (selectedRole == ROLE_GOVERNMENT || selectedRole == ROLE_EMPLOYER) {
           status = "pending";
         }
         await _authService.saveUserRole(
@@ -64,7 +58,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           status,
         );
       }
-
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -81,7 +74,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SnackBar(content: Text(e.toString())),
       );
     }
-
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -98,11 +90,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              // 1. Email Field with Email Keyboard
               TextField(
                 controller: emailController,
-                // 1. EMAIL KEYBOARD TYPE
                 keyboardType: TextInputType.emailAddress,
-                // 3. UI IMPROVEMENT: NEXT ACTION
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(
                   labelText: "Email",
@@ -110,7 +101,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Password Field 👁️
+              
+              // Password Field
               TextField(
                 controller: passwordController,
                 obscureText: _obscurePassword,
@@ -131,7 +123,61 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Confirm Password Field 👁️
+              
+              // Confirm Password Field
               TextField(
                 controller: confirmPasswordController,
-                obscureText: _obscureConfirmPassword
+                obscureText: _obscureConfirmPassword,
+                textInputAction: TextInputAction.done, // Done because it's the last text field
+                decoration: InputDecoration(
+                  labelText: "Confirm Password",
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Role Selection
+              DropdownButtonFormField<String>(
+                value: selectedRole,
+                items: const [
+                  DropdownMenuItem(value: ROLE_JOBSEEKER, child: Text('Jobseeker')),
+                  DropdownMenuItem(value: ROLE_EMPLOYER, child: Text('Employer')),
+                  DropdownMenuItem(value: ROLE_GOVERNMENT, child: Text('Government')),
+                ],
+                onChanged: (value) {
+                  setState(() => selectedRole = value!);
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Select Role',
+                  prefixIcon: Icon(Icons.person),
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Register Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _register,
+                  child: _isLoading 
+                    ? const CircularProgressIndicator(color: Colors.white) 
+                    : const Text('Register'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
