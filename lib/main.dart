@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'firebase_options.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/admin/approval_screen.dart';
 import 'screens/home/home_screen.dart';
-import 'screens/auth/role_router.dart'; // Fixed path
+import 'screens/auth/role_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // 🔧 FIX: Prevent Windows Firebase crash
+  try {
+    await FirebaseFirestore.instance.clearPersistence();
+  } catch (e) {
+    debugPrint("Firestore persistence already cleared: $e");
+  }
+
   runApp(const PathwayJobsApp());
 }
 
