@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../models/job_post.dart';
-import '../../services/job_service.dart';
+import 'package:pathway_jobs/models/job_post.dart';
+import 'package:pathway_jobs/services/job_service.dart';
 
 class JobPostScreen extends StatefulWidget {
   const JobPostScreen({super.key});
@@ -18,6 +18,15 @@ class _JobPostScreenState extends State<JobPostScreen> {
 
   final JobService _jobService = JobService();
 
+  @override
+  void dispose() {
+    _title.dispose();
+    _company.dispose();
+    _location.dispose();
+    _salary.dispose();
+    super.dispose();
+  }
+
   void postJob() async {
 
     final job = JobPost(
@@ -26,9 +35,12 @@ class _JobPostScreenState extends State<JobPostScreen> {
       company: _company.text,
       location: _location.text,
       salary: _salary.text,
+      isFeatured: false,
     );
 
     await _jobService.createJob(job);
+
+    if (!mounted) return;
 
     Navigator.pop(context);
   }

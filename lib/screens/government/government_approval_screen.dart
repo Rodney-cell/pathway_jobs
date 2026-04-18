@@ -37,6 +37,15 @@ class GovernmentApprovalScreen extends StatelessWidget {
                 userId: doc.id,
                 email: data['email'] ?? 'No email',
                 department: data['department'] ?? 'Unknown',
+
+                // FIXED PART
+                onApprove: () {
+                  adminService.approveUser(doc.id);
+                },
+
+                onReject: () {
+                  adminService.rejectUser(doc.id);
+                },
               );
             }).toList(),
           );

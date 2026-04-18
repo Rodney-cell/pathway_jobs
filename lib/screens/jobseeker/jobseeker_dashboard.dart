@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'job_list_screen.dart';
 
 class JobSeekerDashboard extends StatelessWidget {
   const JobSeekerDashboard({super.key});
@@ -6,9 +7,7 @@ class JobSeekerDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Job Seeker Dashboard'),
-      ),
+      // AppBar removed to prevent double bars
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
@@ -16,13 +15,17 @@ class JobSeekerDashboard extends StatelessWidget {
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           children: [
-
             _buildCard(
               context,
               "Find Jobs",
               Icons.search,
               () {
-                Navigator.pushNamed(context, '/jobList');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const JobListScreen(),
+                  ),
+                );
               },
             ),
 
@@ -57,23 +60,28 @@ class JobSeekerDashboard extends StatelessWidget {
   }
 
   Widget _buildCard(
-      BuildContext context,
-      String title,
-      IconData icon,
-      VoidCallback onTap,
-      ) {
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return Card(
       elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40),
+            Icon(icon, size: 40, color: Theme.of(context).primaryColor),
             const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

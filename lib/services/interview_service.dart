@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/interview_booking.dart';
+// Use the package import to ensure the compiler sees the correct model
+import 'package:pathway_jobs/models/interview_booking.dart';
 
 class InterviewService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -17,7 +18,10 @@ class InterviewService {
         .where('applicantId', isEqualTo: userId)
         .snapshots()
         .map((snapshot) => snapshot.docs
-            .map((doc) => InterviewBooking.fromMap(doc.data()))
+            .map((doc) => InterviewBooking.fromMap(
+                  doc.data(), // Argument 1
+                  doc.id,     // Argument 2
+                ))
             .toList());
   }
 }

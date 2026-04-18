@@ -9,7 +9,7 @@ class AuthService {
   // 📡 AUTH STATE STREAM - Listens for login/logout automatically
   Stream<User?> get userStream => _auth.authStateChanges();
 
-  // 🔐 EMAIL LOGIN with specific error handling
+  // 🔐 EMAIL LOGIN
   Future<void> login(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -29,6 +29,22 @@ class AuthService {
     );
   }
 
+  // 👤 GET USER PROFILE DATA
+  // Accepts a UID to fetch data for the current or any specific user
+  Future<Map<String, dynamic>?> getUserProfile(String uid) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      return doc.data();
+    } catch (e) {
+      print("Error fetching user profile: $e");
+      return null;
+    }
+  }
+
   // 🔵 GOOGLE SIGN-IN
   Future<User?> signInWithGoogle() async {
     try {
@@ -46,7 +62,6 @@ class AuthService {
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
-      // Create document only if it's a new user
       if (userCredential.additionalUserInfo?.isNewUser ?? false) {
         await saveUserRole(userCredential.user!.uid, 'jobseeker', 'active');
       }
@@ -63,7 +78,7 @@ class AuthService {
     await FirebaseFirestore.instance.collection('users').doc(uid).set({
       'role': role,
       'status': status,
-      'createdAt': FieldValue.serverTimestamp(), // Better than Timestamp.now()
+      'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
 
