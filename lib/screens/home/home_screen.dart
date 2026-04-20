@@ -15,6 +15,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
+    // If user not logged in
     if (user == null) {
       return const Scaffold(
         body: Center(
@@ -24,10 +25,10 @@ class HomeScreen extends StatelessWidget {
     }
 
     return FutureBuilder<Map<String, dynamic>?>(
-      // FIXED: Passed user.uid to match the AuthService method
       future: AuthService().getUserProfile(user.uid),
       builder: (context, snapshot) {
 
+        // Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
@@ -36,7 +37,19 @@ class HomeScreen extends StatelessWidget {
           );
         }
 
-        if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+        // Debug error
+        if (snapshot.hasError) {
+          print("HOME SCREEN ERROR: ${snapshot.error}");
+          return const Scaffold(
+            body: Center(
+              child: Text("Error loading profile"),
+            ),
+          );
+        }
+
+        // No data
+        if (!snapshot.hasData || snapshot.data == null) {
+          print("HOME SCREEN ERROR: No profile data found");
           return const Scaffold(
             body: Center(
               child: Text("Error loading profile"),
@@ -46,15 +59,19 @@ class HomeScreen extends StatelessWidget {
 
         final data = snapshot.data!;
         final role = data['role'] ?? "jobseeker";
-        final status = data['status'] ?? "pending";
+        final status = data['status'] ?? "approved";
 
+        // Pending approval screen
         if (status == "pending") {
           return Scaffold(
             appBar: AppBar(
+              title: const Text("Pending Approval"),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.logout),
-                  onPressed: () => FirebaseAuth.instance.signOut(),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                  },
                 ),
               ],
             ),
@@ -70,6 +87,7 @@ class HomeScreen extends StatelessWidget {
           );
         }
 
+        // Dashboard selection
         Widget getDashboard() {
           switch (role) {
             case "jobseeker":
@@ -89,6 +107,8 @@ class HomeScreen extends StatelessWidget {
           appBar: AppBar(
             title: const Text("Pathway Jobs"),
             actions: [
+
+              // Profile Button
               IconButton(
                 icon: const Icon(Icons.person),
                 onPressed: () {
@@ -100,6 +120,8 @@ class HomeScreen extends StatelessWidget {
                   );
                 },
               ),
+
+              // Logout Button
               IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () async {
@@ -108,6 +130,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
+
           body: getDashboard(),
         );
       },

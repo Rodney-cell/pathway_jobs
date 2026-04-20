@@ -21,16 +21,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLoading = false;
   final user = FirebaseAuth.instance.currentUser;
 
-  // 📍 Added initState to trigger data fetch
   @override
   void initState() {
     super.initState();
     _loadProfile();
   }
 
-  // 👇 ADDED: Load Profile Data from Firestore
+  // 👇 UPDATED: Load Profile Data with Debugging
   Future<void> _loadProfile() async {
     try {
+      if (user == null) {
+        print("PROFILE ERROR: User is null");
+        return;
+      }
+
       final doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
@@ -48,6 +52,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
+      print("PROFILE ERROR: $e"); // 👈 Important debug
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error loading profile: $e")),
@@ -172,12 +178,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveProfile,
-                  child: _isLoading 
+                  child: _isLoading
                       ? const SizedBox(
-                          height: 20, 
-                          width: 20, 
-                          child: CircularProgressIndicator(strokeWidth: 2)
-                        ) 
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2))
                       : const Text("Save Profile"),
                 ),
               )
