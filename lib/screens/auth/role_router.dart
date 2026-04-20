@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../dashboard/admin_dashboard.dart';
-import '../dashboard/jobseeker_dashboard.dart';
-import '../dashboard/employer_dashboard.dart';
-import '../dashboard/government_dashboard.dart';
+// Correct Dashboard Imports (Fixed)
+import 'package:pathway_jobs/screens/admin/admin_dashboard.dart';
+import 'package:pathway_jobs/screens/jobseeker/jobseeker_dashboard.dart';
+import 'package:pathway_jobs/screens/employer/employer_dashboard.dart';
+import 'package:pathway_jobs/screens/government/government_dashboard.dart';
 
-import '../auth/login_screen.dart';
-import 'rejected_screen.dart';
+import 'package:pathway_jobs/screens/auth/login_screen.dart';
+import 'package:pathway_jobs/screens/auth/rejected_screen.dart';
 
 class RoleRouter extends StatelessWidget {
   const RoleRouter({super.key});
@@ -59,7 +60,7 @@ class RoleRouter extends StatelessWidget {
                 userSnapshot.data!.data() as Map<String, dynamic>;
 
             String role = userData['role'] ?? 'jobseeker';
-            String status = userData['status'] ?? 'pending';
+            String status = userData['status'] ?? 'active';
 
             // Admin
             if (role == 'admin') {
@@ -92,7 +93,7 @@ class RoleRouter extends StatelessWidget {
             }
 
             // Jobseeker (default)
-            return const JobseekerDashboard();
+            return const JobSeekerDashboard();
           },
         );
       },
