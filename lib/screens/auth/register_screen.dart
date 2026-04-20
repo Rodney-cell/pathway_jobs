@@ -83,6 +83,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       Navigator.pop(context);
     } catch (e) {
+      // FIXED: Added mounted check for professional practice
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
@@ -177,7 +179,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               // Role Selection
               DropdownButtonFormField<String>(
-                value: selectedRole,
+                // FIXED: Changed 'value' to 'initialValue' to resolve deprecation warning
+                initialValue: selectedRole,
                 items: const [
                   DropdownMenuItem(
                     value: ROLE_JOBSEEKER,

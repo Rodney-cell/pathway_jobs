@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Correct Dashboard Imports (Fixed)
+// 1. ADDED: Main Dashboard Import
+import 'package:pathway_jobs/screens/main/main_dashboard.dart';
+
+// Correct Dashboard Imports
 import 'package:pathway_jobs/screens/admin/admin_dashboard.dart';
 import 'package:pathway_jobs/screens/jobseeker/jobseeker_dashboard.dart';
 import 'package:pathway_jobs/screens/employer/employer_dashboard.dart';
@@ -19,55 +22,44 @@ class RoleRouter extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-
-        // Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        // Not logged in
         if (!snapshot.hasData) {
           return const LoginScreen();
         }
 
-        // Logged in → check role
         return FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance
               .collection('users')
               .doc(snapshot.data!.uid)
               .get(),
           builder: (context, userSnapshot) {
-
-            // Loading user data
             if (userSnapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
+                body: Center(child: CircularProgressIndicator()),
               );
             }
 
-            // If no user data
+            // 2. FIXED: If no user data exists, go to MainDashboard to pick a role
             if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-              return const LoginScreen();
+              return const MainDashboard();
             }
 
-            var userData =
-                userSnapshot.data!.data() as Map<String, dynamic>;
+            // EXTRA SAFE: Prevent crash if doc exists but data is null
+            var userData = userSnapshot.data!.data() as Map<String, dynamic>? ?? {};
 
-            String role = userData['role'] ?? 'jobseeker';
+            // SAFER: Default to empty string so it hits MainDashboard if role is missing
+            String role = userData['role'] ?? '';
             String status = userData['status'] ?? 'active';
 
-            // Admin
             if (role == 'admin') {
               return const AdminDashboard();
             }
 
-            // Government
             if (role == 'government') {
               if (status == 'pending') {
                 return const Scaffold(
@@ -79,21 +71,23 @@ class RoleRouter extends StatelessWidget {
                   ),
                 );
               }
-
               if (status == 'rejected') {
                 return const RejectedScreen();
               }
-
               return const GovernmentDashboard();
             }
 
-            // Employer
             if (role == 'employer') {
               return const EmployerDashboard();
             }
 
-            // Jobseeker (default)
-            return const JobSeekerDashboard();
+            // 3. FINAL FIX: Only go to JobSeekerDashboard if explicitly set
+            if (role == 'jobseeker') {
+              return const JobSeekerDashboard();
+            }
+
+            // Everything else goes to the Role Picker
+            return const MainDashboard();
           },
         );
       },
