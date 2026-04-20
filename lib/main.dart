@@ -3,10 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'firebase_options.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/admin/approval_screen.dart';
-import 'screens/home/home_screen.dart';
-import 'screens/auth/role_router.dart';
+// Standardized imports using package paths
+import 'package:pathway_jobs/screens/auth/login_screen.dart';
+import 'package:pathway_jobs/screens/admin/approval_screen.dart';
+import 'package:pathway_jobs/screens/home/home_screen.dart';
+import 'package:pathway_jobs/screens/auth/role_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,11 @@ class PathwayJobsApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pathway Jobs',
       debugShowCheckedModeBanner: false,
+      // Professional Theme Configuration
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.blue,
+      ),
       home: const RoleRouter(),
       routes: {
         '/login': (context) => const LoginScreen(),

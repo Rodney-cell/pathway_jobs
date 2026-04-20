@@ -6,7 +6,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // 📡 AUTH STATE STREAM - Listens for login/logout automatically
+  // 📡 AUTH STATE STREAM
   Stream<User?> get userStream => _auth.authStateChanges();
 
   // 🔐 EMAIL LOGIN
@@ -18,19 +18,29 @@ class AuthService {
     }
   }
 
-  // 🆕 REGISTER USER
+  // 🆕 REGISTER USER (FIXED VERSION)
   Future<UserCredential> register(
     String email,
     String password,
   ) async {
-    return await FirebaseAuth.instance.createUserWithEmailAndPassword(
+    // 1. Create the user in Firebase Authentication
+    final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    // 2. Automatically create the Firestore Profile
+    // This prevents the "Error loading profile" issue for new users
+    await saveUserRole(
+      userCredential.user!.uid,
+      'jobseeker', // Default role
+      'active',    // Default status
+    );
+
+    return userCredential;
   }
 
   // 👤 GET USER PROFILE DATA
-  // Accepts a UID to fetch data for the current or any specific user
   Future<Map<String, dynamic>?> getUserProfile(String uid) async {
     try {
       final doc = await FirebaseFirestore.instance

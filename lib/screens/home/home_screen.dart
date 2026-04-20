@@ -15,44 +15,50 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
-    // If user not logged in
+    // 1. Safety check for logged in user
     if (user == null) {
       return const Scaffold(
-        body: Center(
-          child: Text("User not logged in"),
-        ),
+        body: Center(child: Text("User not logged in")),
       );
     }
 
     return FutureBuilder<Map<String, dynamic>?>(
       future: AuthService().getUserProfile(user.uid),
       builder: (context, snapshot) {
-
-        // Loading
+        // 2. Loading State
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        // Debug error
-        if (snapshot.hasError) {
-          print("HOME SCREEN ERROR: ${snapshot.error}");
-          return const Scaffold(
+        // 3. FIX: Handle missing Firestore Document (The "Error loading profile" fix)
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text("Setup Account")),
             body: Center(
-              child: Text("Error loading profile"),
-            ),
-          );
-        }
-
-        // No data
-        if (!snapshot.hasData || snapshot.data == null) {
-          print("HOME SCREEN ERROR: No profile data found");
-          return const Scaffold(
-            body: Center(
-              child: Text("Error loading profile"),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.account_circle, size: 80, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  const Text("No profile found. Please set up your role."),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      );
+                    },
+                    child: const Text("Go to Profile Setup"),
+                  ),
+                  TextButton(
+                    onPressed: () => FirebaseAuth.instance.signOut(),
+                    child: const Text("Logout"),
+                  ),
+                ],
+              ),
             ),
           );
         }
@@ -61,7 +67,7 @@ class HomeScreen extends StatelessWidget {
         final role = data['role'] ?? "jobseeker";
         final status = data['status'] ?? "approved";
 
-        // Pending approval screen
+        // 4. Pending approval screen
         if (status == "pending") {
           return Scaffold(
             appBar: AppBar(
@@ -69,9 +75,7 @@ class HomeScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.logout),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                  },
+                  onPressed: () async => await FirebaseAuth.instance.signOut(),
                 ),
               ],
             ),
@@ -87,7 +91,7 @@ class HomeScreen extends StatelessWidget {
           );
         }
 
-        // Dashboard selection
+        // 5. Dashboard selection logic
         Widget getDashboard() {
           switch (role) {
             case "jobseeker":
@@ -107,30 +111,23 @@ class HomeScreen extends StatelessWidget {
           appBar: AppBar(
             title: const Text("Pathway Jobs"),
             actions: [
-
-              // Profile Button
               IconButton(
+                tooltip: "Profile",
                 icon: const Icon(Icons.person),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
                   );
                 },
               ),
-
-              // Logout Button
               IconButton(
+                tooltip: "Logout",
                 icon: const Icon(Icons.logout),
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                },
+                onPressed: () async => await FirebaseAuth.instance.signOut(),
               ),
             ],
           ),
-
           body: getDashboard(),
         );
       },
