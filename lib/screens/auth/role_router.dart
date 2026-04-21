@@ -44,13 +44,13 @@ class RoleRouter extends StatelessWidget {
               );
             }
 
-            // 👇 UPDATED: Error and Missing Data handling
+            // 👇 FINAL FIXED SECTION: Missing data or errors now lead to the Role Picker
             if (userSnapshot.hasError) {
-              return const LoginScreen();
+              return const MainDashboard();
             }
 
             if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-              return const LoginScreen();
+              return const MainDashboard();
             }
 
             // EXTRA SAFE: Prevent crash if doc exists but data is null
