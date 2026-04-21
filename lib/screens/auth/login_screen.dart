@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
+
 import '../../services/auth_service.dart';
-import '../home/home_screen.dart';
 import 'phone_login_screen.dart';
 import 'register_screen.dart';
+import 'package:pathway_jobs/screens/auth/role_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,11 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
         emailController.text.trim(),
         passwordController.text.trim(),
       );
+
       if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const RoleRouter(),
         ),
       );
     } catch (e) {
@@ -42,6 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text(e.toString())),
       );
     }
+
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -51,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // 🔵 GOOGLE LOGIN
   Future<void> _googleLogin() async {
-    // Extra safety check in case the method is called manually
     if (!(Platform.isAndroid || Platform.isIOS)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -76,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const RoleRouter(),
         ),
       );
     } catch (e) {
@@ -94,9 +97,11 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
+
     await FirebaseAuth.instance.sendPasswordResetEmail(
       email: emailController.text.trim(),
     );
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Password reset email sent")),
     );
@@ -120,6 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+
               TextField(
                 controller: passwordController,
                 obscureText: _obscurePassword,
@@ -128,7 +134,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                     onPressed: () {
                       setState(() {
@@ -138,7 +146,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 10),
+
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -146,7 +156,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text("Forgot Password?"),
                 ),
               ),
+
               const SizedBox(height: 20),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -158,8 +170,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       : const Text('Login'),
                 ),
               ),
+
               const SizedBox(height: 12),
-              // 🔵 GOOGLE SIGN-IN BUTTON (Auto-disabled on non-mobile)
+
+              // 🔵 GOOGLE SIGN-IN
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -170,7 +184,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       : null,
                 ),
               ),
+
               const SizedBox(height: 12),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -185,7 +201,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text("Login with Phone"),
                 ),
               ),
+
               const SizedBox(height: 20),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -195,7 +213,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
+                          builder: (context) =>
+                              const RegisterScreen(),
                         ),
                       );
                     },

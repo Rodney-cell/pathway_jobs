@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pathway_jobs/screens/jobseeker/saved_jobs_screen.dart'; // Add this
 import 'job_list_screen.dart';
 
 class JobSeekerDashboard extends StatelessWidget {
@@ -7,7 +8,6 @@ class JobSeekerDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar removed to prevent double bars
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
@@ -38,11 +38,19 @@ class JobSeekerDashboard extends StatelessWidget {
               },
             ),
 
+            // FIXED: Now opens SavedJobsScreen
             _buildCard(
               context,
               "Saved Jobs",
               Icons.bookmark,
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SavedJobsScreen(),
+                  ),
+                );
+              },
             ),
 
             _buildCard(
