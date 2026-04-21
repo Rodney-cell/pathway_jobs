@@ -9,7 +9,7 @@ class AuthService {
   // 📡 AUTH STATE STREAM
   Stream<User?> get userStream => _auth.authStateChanges();
 
-  // 🔐 EMAIL LOGIN (UPDATED VERSION)
+  // 🔐 EMAIL LOGIN
   Future<User?> login(String email, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
@@ -22,7 +22,7 @@ class AuthService {
     }
   }
 
-  // 🆕 REGISTER USER (FIXED VERSION)
+  // 🆕 REGISTER USER (FINAL CLEAN VERSION)
   Future<UserCredential> register(
     String email,
     String password,
@@ -33,12 +33,14 @@ class AuthService {
       password: password,
     );
 
-    // 2. Automatically create the Firestore Profile
-    await saveUserRole(
-      userCredential.user!.uid,
-      'jobseeker', // Default role
-      'active',    // Default status
-    );
+    // 2. Create empty user profile (NO ROLE YET)
+    // This ensures the RoleRouter will redirect to MainDashboard (Role Picker)
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .set({
+      'createdAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
 
     return userCredential;
   }
@@ -76,7 +78,13 @@ class AuthService {
           await _auth.signInWithCredential(credential);
 
       if (userCredential.additionalUserInfo?.isNewUser ?? false) {
-        await saveUserRole(userCredential.user!.uid, 'jobseeker', 'active');
+        // Force Google users to pick a role by not setting one here
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'createdAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
       }
 
       return userCredential.user;
@@ -91,7 +99,7 @@ class AuthService {
     await FirebaseFirestore.instance.collection('users').doc(uid).set({
       'role': role,
       'status': status,
-      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
 
