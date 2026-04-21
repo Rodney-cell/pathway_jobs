@@ -9,6 +9,10 @@ import 'package:pathway_jobs/screens/admin/approval_screen.dart';
 import 'package:pathway_jobs/screens/home/home_screen.dart';
 import 'package:pathway_jobs/screens/auth/role_router.dart';
 
+// Added requested imports
+import 'package:pathway_jobs/screens/jobseeker/application_tracking_screen.dart';
+import 'package:pathway_jobs/screens/jobseeker/profile_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -44,6 +48,10 @@ class PathwayJobsApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/admin-approvals': (context) => const ApprovalScreen(),
+
+        // Jobseeker Routes
+        '/applications': (context) => const ApplicationTrackingScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
     );
   }

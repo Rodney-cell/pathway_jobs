@@ -44,15 +44,19 @@ class RoleRouter extends StatelessWidget {
               );
             }
 
-            // 2. FIXED: If no user data exists, go to MainDashboard to pick a role
+            // 👇 UPDATED: Error and Missing Data handling
+            if (userSnapshot.hasError) {
+              return const LoginScreen();
+            }
+
             if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-              return const MainDashboard();
+              return const LoginScreen();
             }
 
             // EXTRA SAFE: Prevent crash if doc exists but data is null
             var userData = userSnapshot.data!.data() as Map<String, dynamic>? ?? {};
 
-            // SAFER: Default to empty string so it hits MainDashboard if role is missing
+            // SAFER: Default to empty string
             String role = userData['role'] ?? '';
             String status = userData['status'] ?? 'active';
 
