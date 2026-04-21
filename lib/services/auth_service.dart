@@ -9,10 +9,14 @@ class AuthService {
   // 📡 AUTH STATE STREAM
   Stream<User?> get userStream => _auth.authStateChanges();
 
-  // 🔐 EMAIL LOGIN
-  Future<void> login(String email, String password) async {
+  // 🔐 EMAIL LOGIN (UPDATED VERSION)
+  Future<User?> login(String email, String password) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return credential.user;
     } on FirebaseAuthException catch (e) {
       throw e.message ?? "An unknown login error occurred.";
     }
@@ -30,7 +34,6 @@ class AuthService {
     );
 
     // 2. Automatically create the Firestore Profile
-    // This prevents the "Error loading profile" issue for new users
     await saveUserRole(
       userCredential.user!.uid,
       'jobseeker', // Default role

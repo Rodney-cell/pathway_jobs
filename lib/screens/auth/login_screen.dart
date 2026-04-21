@@ -32,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordController.text.trim(),
       );
 
+      print("LOGIN SUCCESS"); // ← Debugging: Auth worked
+
       if (!mounted) return;
 
       Navigator.pushReplacement(
@@ -41,6 +43,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } catch (e) {
+      print("LOGIN ERROR: $e"); // ← Debugging: Why login failed
+
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
@@ -74,6 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      print("GOOGLE LOGIN SUCCESS");
+
       if (!mounted) return;
 
       Navigator.pushReplacement(
@@ -83,6 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } catch (e) {
+      print("GOOGLE LOGIN ERROR: $e");
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Google login failed: $e")),
       );
