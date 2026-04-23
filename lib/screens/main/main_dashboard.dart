@@ -15,6 +15,11 @@ class MainDashboard extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
+    // Show a small loading snackbar so the user knows it's working
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Setting up your dashboard..."), duration: Duration(seconds: 1)),
+    );
+
     // Update the role in Firestore
     await FirebaseFirestore.instance
         .collection('users')
@@ -92,7 +97,6 @@ class MainDashboard extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 15),
-          // FIXED: Swapped back to standard withOpacity(0.1)
           backgroundColor: color.withOpacity(0.1), 
           foregroundColor: color,
         ),
