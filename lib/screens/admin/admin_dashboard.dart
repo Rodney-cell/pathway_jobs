@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// Added MainDashboard import
+import 'package:pathway_jobs/screens/main/main_dashboard.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -8,6 +10,19 @@ class AdminDashboard extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
+        // Added Switch Role button
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.swap_horiz),
+            tooltip: "Switch Role",
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const MainDashboard()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -16,49 +31,42 @@ class AdminDashboard extends StatelessWidget {
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           children: [
-
             _buildCard(
               context,
               "Manage Users",
               Icons.people,
               () {},
             ),
-
             _buildCard(
               context,
               "Manage Jobs",
               Icons.work,
               () {},
             ),
-
             _buildCard(
               context,
               "Applications",
               Icons.assignment,
               () {},
             ),
-
             _buildCard(
               context,
               "Reports",
               Icons.bar_chart,
               () {},
             ),
-
             _buildCard(
               context,
               "System Settings",
               Icons.settings,
               () {},
             ),
-
             _buildCard(
               context,
               "Admin Profile",
               Icons.admin_panel_settings,
               () {},
             ),
-
           ],
         ),
       ),

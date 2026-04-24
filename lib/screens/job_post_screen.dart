@@ -10,9 +10,9 @@ class JobPostScreen extends StatefulWidget {
 }
 
 class _JobPostScreenState extends State<JobPostScreen> {
-
   final _title = TextEditingController();
   final _company = TextEditingController();
+  final _descriptionController = TextEditingController();
   final _location = TextEditingController();
   final _salary = TextEditingController();
 
@@ -22,17 +22,28 @@ class _JobPostScreenState extends State<JobPostScreen> {
   void dispose() {
     _title.dispose();
     _company.dispose();
+    _descriptionController.dispose();
     _location.dispose();
     _salary.dispose();
     super.dispose();
   }
 
   void postJob() async {
+    // Validation BEFORE posting
+    if (_title.text.isEmpty ||
+        _company.text.isEmpty ||
+        _descriptionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all required fields")),
+      );
+      return;
+    }
 
     final job = JobPost(
       id: '',
       title: _title.text,
       company: _company.text,
+      companyDescription: _descriptionController.text,
       location: _location.text,
       salary: _salary.text,
       isFeatured: false,
@@ -41,6 +52,11 @@ class _JobPostScreenState extends State<JobPostScreen> {
     await _jobService.createJob(job);
 
     if (!mounted) return;
+
+    // 👇 ADDED: Success message before navigating back
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Job posted successfully")),
+    );
 
     Navigator.pop(context);
   }
@@ -53,45 +69,58 @@ class _JobPostScreenState extends State<JobPostScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-
-            TextField(
-              controller: _title,
-              decoration: const InputDecoration(
-                labelText: "Job Title",
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: _title,
+                decoration: const InputDecoration(
+                  labelText: "Job Title *",
+                ),
               ),
-            ),
-
-            TextField(
-              controller: _company,
-              decoration: const InputDecoration(
-                labelText: "Company",
+              const SizedBox(height: 10),
+              TextField(
+                controller: _company,
+                decoration: const InputDecoration(
+                  labelText: "Company *",
+                ),
               ),
-            ),
+              const SizedBox(height: 10),
 
-            TextField(
-              controller: _location,
-              decoration: const InputDecoration(
-                labelText: "Location",
+              TextField(
+                controller: _descriptionController,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: "About the Company *",
+                  hintText: "Describe what your company does...",
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
+              const SizedBox(height: 10),
 
-            TextField(
-              controller: _salary,
-              decoration: const InputDecoration(
-                labelText: "Salary",
+              TextField(
+                controller: _location,
+                decoration: const InputDecoration(
+                  labelText: "Location",
+                ),
               ),
-            ),
-
-            const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: postJob,
-              child: const Text("Post Job"),
-            )
-
-          ],
+              const SizedBox(height: 10),
+              TextField(
+                controller: _salary,
+                decoration: const InputDecoration(
+                  labelText: "Salary",
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: postJob,
+                  child: const Text("Post Job"),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

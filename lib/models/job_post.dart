@@ -2,17 +2,19 @@ class JobPost {
   final String id;
   final String title;
   final String company;
+  final String companyDescription; // ✅ NEW FIELD
   final String location;
   final String salary;
-  final bool isFeatured; // Added this field
+  final bool isFeatured;
 
   JobPost({
     required this.id,
     required this.title,
     required this.company,
+    required this.companyDescription, // ✅ REQUIRED
     required this.location,
     required this.salary,
-    this.isFeatured = false, // Defaulting to false
+    this.isFeatured = false,
   });
 
   factory JobPost.fromMap(Map<String, dynamic> map, String id) {
@@ -20,10 +22,10 @@ class JobPost {
       id: id,
       title: map['title'] ?? '',
       company: map['company'] ?? '',
+      companyDescription: map['companyDescription'] ?? '', // ✅ READ FROM FIRESTORE
       location: map['location'] ?? '',
       salary: map['salary'] ?? '',
-      // Ensure we pull the featured status from Firestore
-      isFeatured: map['isFeatured'] ?? false, 
+      isFeatured: map['isFeatured'] ?? false,
     );
   }
 
@@ -31,9 +33,10 @@ class JobPost {
     return {
       'title': title,
       'company': company,
+      'companyDescription': companyDescription, // ✅ SAVE TO FIRESTORE
       'location': location,
       'salary': salary,
-      'isFeatured': isFeatured, // Added to map
+      'isFeatured': isFeatured,
     };
   }
 }

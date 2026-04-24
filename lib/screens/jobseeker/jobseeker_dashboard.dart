@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pathway_jobs/screens/jobseeker/saved_jobs_screen.dart'; // Add this
+import 'package:pathway_jobs/screens/jobseeker/saved_jobs_screen.dart';
+// Added MainDashboard import
+import 'package:pathway_jobs/screens/main/main_dashboard.dart';
 import 'job_list_screen.dart';
 
 class JobSeekerDashboard extends StatelessWidget {
@@ -8,6 +10,22 @@ class JobSeekerDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ADDED: AppBar with Switch Role action
+      appBar: AppBar(
+        title: const Text("Job Seeker Dashboard"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.swap_horiz),
+            tooltip: "Switch Role",
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const MainDashboard()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
@@ -38,7 +56,6 @@ class JobSeekerDashboard extends StatelessWidget {
               },
             ),
 
-            // FIXED: Now opens SavedJobsScreen
             _buildCard(
               context,
               "Saved Jobs",

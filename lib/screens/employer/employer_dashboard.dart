@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// Added MainDashboard import
+import 'package:pathway_jobs/screens/main/main_dashboard.dart';
 
 // FIXED: Updated Package Imports to reflect the new file location
 import 'package:pathway_jobs/screens/job_post_screen.dart';
@@ -13,6 +15,19 @@ class EmployerDashboard extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Employer Dashboard"),
+        // Added Switch Role button
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.swap_horiz),
+            tooltip: "Switch Role",
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const MainDashboard()),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

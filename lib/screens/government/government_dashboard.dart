@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// Added MainDashboard import
+import 'package:pathway_jobs/screens/main/main_dashboard.dart';
 
 class GovernmentDashboard extends StatelessWidget {
   const GovernmentDashboard({super.key});
@@ -9,6 +11,19 @@ class GovernmentDashboard extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Government Dashboard'),
+        // Added Switch Role button
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.swap_horiz),
+            tooltip: "Switch Role",
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const MainDashboard()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
